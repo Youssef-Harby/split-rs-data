@@ -1,7 +1,7 @@
 from osgeo import gdal
 import math
 
-def mygridfun(pic, frmt, cdpath):
+def mygridfun(pic, frmt, cdpath, frmtuot, scaleoptions):
     ds = gdal.Open(pic)
     gt = ds.GetGeoTransform()
 
@@ -52,6 +52,6 @@ def mygridfun(pic, frmt, cdpath):
             # outputBounds = (xmin, ymin, xmax, ymax), dstNodata = -9999)
             
             # or gdal translate to subset the input raster
-            gdal.Translate(cdpath+str(i)+str(j)+frmt, ds, projWin = (abs(xmin), abs(ymax), abs(xmax), abs(ymin)), xRes = resx, yRes = -resy)
+            gdal.Translate(cdpath+str(i)+str(j)+'.'+frmt, ds, projWin = (abs(xmin), abs(ymax), abs(xmax), abs(ymin)), xRes = resx, yRes = -resy, outputType=gdal.gdalconst.GDT_Byte, format = frmtuot, scaleParams = [[scaleoptions]])
             # close the open dataset!!!
             # ds = None

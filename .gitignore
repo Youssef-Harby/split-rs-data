@@ -1,0 +1,6 @@
+DataSet/image/*
+DataSet/label/*
+DataSet/raster/*
+DataSet/vector/*
+.ipynb_checkpoints
+__pycache__/
