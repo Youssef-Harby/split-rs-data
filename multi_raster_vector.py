@@ -20,28 +20,40 @@ rasterList = [os.path.normpath(rr) for rr in glob.glob(
 vectorList = [os.path.normpath(vv) for vv in glob.glob(
     vecdir + "**/*.shp", recursive=True)]
 
-# LEAVE IT EMPTY IF YOU DON'T KNOW (attribute field in vector table like building fid or OBJECTID)
-att_field_input = ''
 
-
-def rasterize(fn_ras, fn_vec, att_field_input, vvv):
+def rasterize(fn_ras, fn_vec, vvv):
+    driver = ogr.GetDriverByName("ESRI Shapefile")
     ras_ds = gdal.Open(fn_ras)
-    vec_ds = ogr.Open(fn_vec)
+    vec_ds = driver.Open(fn_vec, 1)
 
     lyr = vec_ds.GetLayer()
     geot = ras_ds.GetGeoTransform()
     proj = ras_ds.GetProjection()  # Get the projection from original tiff (fn_ras)
 
     layerdefinition = lyr.GetLayerDefn()
+    feature = ogr.Feature(layerdefinition)
 
-    # Display Attribute Fields
-    # for i in range(layerdefinition.GetFieldCount()):
-    #     print (layerdefinition.GetFieldDefn(0).GetName())
+    schema = []
+    for n in range(layerdefinition.GetFieldCount()):
+        fdefn = layerdefinition.GetFieldDefn(n)
+        schema.append(fdefn.name)
+    yy = feature.GetFieldIndex("MLDS")
+    if yy < 0:
+        print("MLDS field not found, we will create one for you and make all values to 1")
+    else:
+        lyr.DeleteField(yy)
+        #     # lyr.ResetReading()
+        # else:
+    new_field = ogr.FieldDefn('MLDS', ogr.OFTInteger)
+    lyr.CreateField(new_field)
+    for feature in lyr:
+        feature.SetField("MLDS", 1)
+        lyr.SetFeature(feature)
+        feature = None
 
-    first_att_field = layerdefinition.GetFieldDefn(
-        0).GetName()  # Get the first attribute field
-
-    isAttributeOn = att_field_input if att_field_input != '' else first_att_field
+    # isAttributeOn = att_field_input if att_field_input != '' else first_att_field
+    # pixelsizeX = 0.2 if ras_ds.RasterXSize < 0.2 else ras_ds.RasterXSize
+    # pixelsizeY = -0.2 if ras_ds.RasterYSize < -0.2 else ras_ds.RasterYSize
 
     drv_tiff = gdal.GetDriverByName("GTiff")
     chn_ras_ds = drv_tiff.Create(
@@ -49,30 +61,21 @@ def rasterize(fn_ras, fn_vec, att_field_input, vvv):
     chn_ras_ds.SetGeoTransform(geot)
 
     gdal.RasterizeLayer(chn_ras_ds, [1], lyr, options=[
-                        'ATTRIBUTE='+isAttributeOn])
-    chn_ras_ds.GetRasterBand(1).SetNoDataValue(
-        0.0)  # Change No Data Value to 0
+        'ATTRIBUTE=MLDS'])
+    # Change No Data Value to 0
+    chn_ras_ds.GetRasterBand(1).SetNoDataValue(-9999)
+    chn_ras_ds.FlushCache()
+
     # Set the projection from original tiff (fn_ras) to the rasterized tiff
     chn_ras_ds.SetProjection(proj)
     chn_ras_ds = None
-
-    # change all values >= 1 to 1
-    ds = gdal.Open(output)
-    ds.GetRasterBand(1).SetNoDataValue(-9999)
-    ds.FlushCache()
-
-    arr = ds.ReadAsArray()
-    data = (arr >= 1)
-    gdal_array.SaveArray(data.astype("byte"), fn_vec_t_ras, "GTIFF", ds)
-    data = None
+    # lyr.DeleteField(yy) # delete field
+    vec_ds = None
 
 
-def mygridfun(fn_ras, cdpath, frmt_ext, imgfrmat, scaleoptions, rrrr):
+def mygridfun(fn_ras, cdpath, frmt_ext, imgfrmat, scaleoptions, needed_out_x, needed_out_y, rrrr):
     ds = gdal.Open(fn_ras)
     gt = ds.GetGeoTransform()
-
-    needed_out_x = 512
-    needed_out_y = 512
 
     # get coordinates of upper left corner
     xmin = gt[0]
@@ -80,14 +83,6 @@ def mygridfun(fn_ras, cdpath, frmt_ext, imgfrmat, scaleoptions, rrrr):
     resx = gt[1]
     res_y = gt[5]
     resy = abs(res_y)
-
-    # determine total length of raster (if needed XD )
-    # xlen = resx * ds.RasterXSize
-    # ylen = resy * ds.RasterYSize
-
-    # overall raster dim in pixels before the edits (if needed XD )
-    # img_width = ds.RasterXSize
-    # img_height = ds.RasterYSize
 
     # round up to nearst int to the
     xnotround = ds.RasterXSize/needed_out_x
@@ -130,7 +125,6 @@ for vvv in range(len(vectorList)):
     fn_ras = rasterList[vvv]
     fn_vec = vectorList[vvv]
     output = "DataSet/rasterized/values/" + vectorName[vvv] + ".tif"
-    fn_vec_t_ras = "DataSet/rasterized/0255/" + vectorName[vvv] + ".tif"
-    rasterize(fn_ras, fn_vec, att_field_input, vvv)
-    mygridfun(fn_ras, "DataSet/image/image", "jpg", "JPEG", "", vvv)
-    mygridfun(fn_vec_t_ras, "DataSet/label/image", "png", "PNG", "", vvv)
+    rasterize(fn_ras, fn_vec, vvv)
+    mygridfun(fn_ras, "DataSet/image/image", "jpg", "JPEG", "", 512, 512, vvv)
+    mygridfun(output, "DataSet/label/image", "png", "PNG", "", 512, 512, vvv)
