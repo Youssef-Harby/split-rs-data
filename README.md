@@ -1,3 +1,4 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Youssef-Harby/split-rs-data/main)
 # Creating tools to handle raster and vector data to split it into small pieces equaled in size for machine learning datasets
 
 - [X] Creating Docker Image for development env.
@@ -9,5 +10,6 @@
 - [ ] Validation of training and testing datasets for paddlepaddle,YOLO-COCO .. etc.
 - [ ] Simplify multi-polygons with GDAL/OGR or any other method.
 - [ ] GUI
+- [ ] QGIS Plugin
 
  ![](/docs/images/vQ9YMn.gif)
