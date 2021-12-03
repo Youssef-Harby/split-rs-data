@@ -5,3 +5,5 @@ DataSet/raster/*
 DataSet/vector/*
 .ipynb_checkpoints
 __pycache__/
+output
+output_inf

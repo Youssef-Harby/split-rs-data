@@ -44,8 +44,7 @@ def rasterize(fn_ras, fn_vec, output):
         print("MLDS field not found, we will create one for you and make all values to 1")
     else:
         lyr.DeleteField(yy)
-        #     # lyr.ResetReading()
-        # else:
+        # lyr.ResetReading()
     new_field = ogr.FieldDefn("MLDS", ogr.OFTInteger)
     lyr.CreateField(new_field)
     for feature in lyr:
@@ -86,7 +85,7 @@ def mygridfun(fn_ras, cdpath, frmt_ext, imgfrmat, scaleoptions, needed_out_x, ne
     res_y = gt[5]
     resy = abs(res_y)
 
-    # round up to nearst int to the
+    # round up to nearst int
     xnotround = ds.RasterXSize / needed_out_x
     xround = math.ceil(xnotround)
     ynotround = ds.RasterYSize / needed_out_y
