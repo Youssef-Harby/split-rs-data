@@ -1,4 +1,6 @@
 opencv-python
 numpy
 rasterio
+GDAL==3.2.2
+paddleseg
 jupyter
