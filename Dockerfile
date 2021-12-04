@@ -7,7 +7,7 @@ COPY ./requirements.txt .
 
 RUN apt-get update \
   && apt-get install -y libgomp1 \
-    # ffmpeg libsm6 libxext6 \
+    ffmpeg libsm6 libxext6 \
     git \
     build-essential \
     gdal-bin libgdal-dev 
