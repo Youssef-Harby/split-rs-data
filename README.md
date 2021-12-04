@@ -1,4 +1,4 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Youssef-Harby/split-rs-data/main)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Youssef-Harby/split-rs-data/main?labpath=Tutorial.ipynb)
 # Creating tools to handle raster and vector data to split it into small pieces equaled in size for machine learning datasets
 
 - [X] Creating Docker Image for development env.
