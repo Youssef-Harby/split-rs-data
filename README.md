@@ -54,10 +54,9 @@
 - [x] Rasterize shapefile to raster in the same satellite pixel size and projection.
 - [x] Convert 24 or 16 bit raster to 8 bit.
 - [x] Export as jpg (for raster) and png (for rasterized shapefile) with GDAL.
-- [ ] Validation of training and testing datasets for paddlepaddle,YOLO-COCO .. etc.
-- [ ] Simplify multi-polygons with GDAL/OGR or any other method.
+- [X] Validation of training and testing datasets for paddlepaddle.
 - [ ] GUI
-- [ ] QGIS Plugin
+- [X] QGIS Plugin ➡️ [Deep Learning Datasets Maker](https://github.com/deepbands/deep-learning-datasets-maker/)
 
  ![](/docs/images/vQ9YMn.gif)
 
